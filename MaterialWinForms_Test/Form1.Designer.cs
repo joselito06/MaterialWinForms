@@ -29,36 +29,22 @@
         private void InitializeComponent()
         {
             materialButton1 = new MaterialWinForms.Components.Buttons.MaterialButton();
-            materialTextField1 = new MaterialWinForms.Components.Inputs.MaterialTextField();
             SuspendLayout();
             // 
             // materialButton1
             // 
-            materialButton1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             materialButton1.BackColor = Color.Transparent;
-            materialButton1.Elevation = 2;
-            materialButton1.Location = new Point(12, 352);
+            materialButton1.Location = new Point(217, 466);
             materialButton1.Name = "materialButton1";
-            materialButton1.Size = new Size(776, 86);
+            materialButton1.Padding = new Padding(4);
+            materialButton1.Size = new Size(681, 214);
             materialButton1.TabIndex = 0;
-            materialButton1.Type = MaterialWinForms.Components.Buttons.MaterialButton.ButtonType.Contained;
-            // 
-            // materialTextField1
-            // 
-            materialTextField1.BackColor = Color.White;
-            materialTextField1.HintText = "";
-            materialTextField1.IsFloatingLabel = true;
-            materialTextField1.Location = new Point(191, 218);
-            materialTextField1.Name = "materialTextField1";
-            materialTextField1.Size = new Size(485, 74);
-            materialTextField1.TabIndex = 1;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(materialTextField1);
+            ClientSize = new Size(1040, 727);
             Controls.Add(materialButton1);
             Name = "Form1";
             Text = "Form1";
@@ -68,6 +54,5 @@
         #endregion
 
         private MaterialWinForms.Components.Buttons.MaterialButton materialButton1;
-        private MaterialWinForms.Components.Inputs.MaterialTextField materialTextField1;
     }
 }

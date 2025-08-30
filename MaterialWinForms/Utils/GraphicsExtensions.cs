@@ -25,7 +25,7 @@ namespace MaterialWinForms.Utils
             g.DrawPath(pen, path);
         }
 
-        private static GraphicsPath CreateRoundedRectanglePath(Rectangle rect, int cornerRadius)
+        public static GraphicsPath CreateRoundedRectanglePath(Rectangle rect, int cornerRadius)
         {
             var path = new GraphicsPath();
             var diameter = Math.Min(cornerRadius * 2, Math.Min(rect.Width, rect.Height));
@@ -44,6 +44,32 @@ namespace MaterialWinForms.Utils
             }
 
             return path;
+        }
+
+        public static void DrawMaterialShadow(this Graphics g, Rectangle bounds, int elevation)
+        {
+            if (elevation <= 0) return;
+
+            // Sombra más realista basada en Material Design
+            var shadowColor = Color.FromArgb(40, 0, 0, 0);
+            var shadowOffset = elevation / 2;
+            var shadowBlur = elevation;
+
+            for (int i = 0; i < shadowBlur; i++)
+            {
+                var alpha = Math.Max(5, 40 - (i * 35 / shadowBlur));
+                using var shadowBrush = new SolidBrush(Color.FromArgb(alpha, 0, 0, 0));
+
+                var shadowBounds = new Rectangle(
+                    bounds.X - i + shadowOffset,
+                    bounds.Y - i + shadowOffset + 1,
+                    bounds.Width + i * 2,
+                    bounds.Height + i * 2
+                );
+
+                using var shadowPath = CreateRoundedRectanglePath(shadowBounds, 20);
+                g.FillPath(shadowBrush, shadowPath);
+            }
         }
     }
 }

@@ -47,6 +47,7 @@ namespace MaterialWinForms.Components.Buttons
 
         [Category("Material")]
         [Description("Tipo de botón Material Design")]
+        [DefaultValue(ButtonType.Contained)]
         public ButtonType Type
         {
             get => _buttonType;
@@ -65,6 +66,8 @@ namespace MaterialWinForms.Components.Buttons
         {
             Size = new Size(120, 40);
             Cursor = Cursors.Hand;
+            // Agregar margen para la sombra
+            Padding = new Padding(4);
 
             _rippleTimer = new System.Windows.Forms.Timer { Interval = 10 };
             _rippleTimer.Tick += RippleTimer_Tick;
@@ -78,6 +81,12 @@ namespace MaterialWinForms.Components.Buttons
                 _rippleTimer?.Stop();
                 _rippleSize = 0;
             }
+            Invalidate();
+        }
+
+        protected override void OnColorSchemeChanged()
+        {
+            base.OnColorSchemeChanged();
             Invalidate();
         }
 
@@ -121,43 +130,60 @@ namespace MaterialWinForms.Components.Buttons
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 
-            var bounds = new Rectangle(0, 0, Width - 1, Height - 1);
+            //var bounds = new Rectangle(0, 0, Width - 1, Height - 1);
+            // Calcular el área del botón (dejando espacio para la sombra)
+            var shadowOffset = (_buttonType == ButtonType.Contained && Elevation > 0) ? Elevation : 0;
+            var buttonBounds = new Rectangle(
+                shadowOffset,
+                shadowOffset,
+                Width - shadowOffset * 2 - 1,
+                Height - shadowOffset * 2 - 1
+            );
 
             // Dibujar sombra para botones contenidos
             if (_buttonType == ButtonType.Contained)
             {
-                DrawShadow(g, bounds, Elevation);
+                g.DrawMaterialShadow(buttonBounds, Elevation);
             }
 
             // Determinar colores según el estado
             var (backgroundColor, textColor, borderColor) = GetButtonColors();
 
+            // Crear región para clipping del ripple
+            using var buttonPath = GraphicsExtensions.CreateRoundedRectanglePath(buttonBounds, 20);
+            var oldClip = g.Clip;
+            g.SetClip(buttonBounds);
+
             // Dibujar fondo
             if (_buttonType != ButtonType.Text)
             {
                 using var brush = new SolidBrush(backgroundColor);
-                g.FillRoundedRectangle(brush, bounds, 20);
+                g.FillRoundedRectangle(brush, buttonBounds, 20);
             }
 
             // Dibujar borde para botones outlined
             if (_buttonType == ButtonType.Outlined)
             {
                 using var pen = new Pen(borderColor, 1);
-                g.DrawRoundedRectangle(pen, bounds, 20);
+                g.DrawRoundedRectangle(pen, buttonBounds, 20);
             }
 
             // Dibujar efecto hover
             if (_isHovered)
             {
-                var hoverColor = Color.FromArgb(20, ColorScheme.Primary);
+                var hoverColor = _buttonType == ButtonType.Contained
+                    ? Color.FromArgb(20, ColorScheme.OnPrimary)
+                    : Color.FromArgb(20, ColorScheme.Primary);
                 using var brush = new SolidBrush(hoverColor);
-                g.FillRoundedRectangle(brush, bounds, 20);
+                g.FillRoundedRectangle(brush, buttonBounds, 20);
             }
 
             // Dibujar efecto ripple
             if (UseRippleEffect && _rippleSize > 0)
             {
-                var rippleColor = Color.FromArgb(40, ColorScheme.Primary);
+                var rippleColor = _buttonType == ButtonType.Contained
+                    ? Color.FromArgb(40, ColorScheme.OnPrimary)
+                    : Color.FromArgb(40, ColorScheme.Primary);
                 using var brush = new SolidBrush(rippleColor);
                 var rippleRect = new Rectangle(
                     _rippleLocation.X - _rippleSize / 2,
@@ -168,12 +194,15 @@ namespace MaterialWinForms.Components.Buttons
                 g.FillEllipse(brush, rippleRect);
             }
 
+            // Restaurar clipping
+            g.Clip = oldClip;
+
             // Dibujar texto
             if (!string.IsNullOrEmpty(_text))
             {
                 using var font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
                 using var brush = new SolidBrush(textColor);
-                var textRect = bounds;
+                var textRect = buttonBounds;
                 using var sf = new StringFormat
                 {
                     Alignment = StringAlignment.Center,
@@ -182,7 +211,7 @@ namespace MaterialWinForms.Components.Buttons
                 g.DrawString(_text, font, brush, textRect, sf);
             }
         }
-
+        
         private (Color backgroundColor, Color textColor, Color borderColor) GetButtonColors()
         {
             return _buttonType switch
