@@ -1,9 +1,35 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <!-- IMPORTANTE: Habilitar soporte para diseñador -->
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+
+    <!-- Para librerías de controles -->
+    <OutputType>Library</OutputType>
+    <AssemblyTitle>MaterialWinForms</AssemblyTitle>
+    <AssemblyDescription>Material Design Components for Windows Forms</AssemblyDescription>
+
+    <!-- Metadatos del paquete NuGet -->
+    <PackageId>MaterialWinForms</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Joselito Beriguete</Authors>
+    <Company>JBN Code</Company>
+    <Product>MaterialWinForms</Product>
+    <Description>Material Design 2/3 components for Windows Forms applications targeting .NET 8.0</Description>
+    <PackageTags>material-design;winforms;ui-components;net8</PackageTags>
+    <RepositoryUrl>https://github.com/joselito06/MaterialWinForms</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Referencias explícitas para Windows Forms -->
+    <FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
+  </ItemGroup>
 
 </Project>

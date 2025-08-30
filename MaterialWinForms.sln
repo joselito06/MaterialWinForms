@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialWinForms", "MaterialWinForms\MaterialWinForms.csproj", "{A906ED14-292E-4B2C-A774-D12E46375E21}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaterialWinForms_Test", "MaterialWinForms_Test\MaterialWinForms_Test.csproj", "{DF367F36-595E-40DE-9B34-9ACD540389BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{A906ED14-292E-4B2C-A774-D12E46375E21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A906ED14-292E-4B2C-A774-D12E46375E21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A906ED14-292E-4B2C-A774-D12E46375E21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF367F36-595E-40DE-9B34-9ACD540389BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF367F36-595E-40DE-9B34-9ACD540389BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF367F36-595E-40DE-9B34-9ACD540389BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF367F36-595E-40DE-9B34-9ACD540389BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
