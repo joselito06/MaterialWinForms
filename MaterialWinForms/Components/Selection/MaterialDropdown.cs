@@ -173,10 +173,10 @@ namespace MaterialWinForms.Components.Selection
                 var item = _items[i];
                 var itemIndex = i;
 
-                var itemButton = new MaterialButton
+                var itemButton = new MaterialSimpleButton
                 {
                     Text = item.Text,
-                    Type = MaterialButton.ButtonType.Text,
+                    Type = MaterialSimpleButton.ButtonType.Text,
                     Size = new Size(Width - 8, 36),
                     Location = new Point(4, 4 + i * 36),
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,

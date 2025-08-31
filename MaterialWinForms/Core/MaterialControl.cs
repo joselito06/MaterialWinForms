@@ -14,6 +14,7 @@ namespace MaterialWinForms.Core
     /// <summary>
     /// Clase base para todos los controles Material Design
     /// </summary>
+    [ToolboxItem(false)]
     public abstract class MaterialControl : UserControl
     {
         private MaterialColorScheme? _colorScheme = MaterialColorScheme.Light;

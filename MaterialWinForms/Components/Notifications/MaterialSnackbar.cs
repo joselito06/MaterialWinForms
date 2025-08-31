@@ -18,7 +18,7 @@ namespace MaterialWinForms.Components.Notifications
     /// </summary>
     public class MaterialSnackbar : Form
     {
-        private MaterialButton? _actionButton;
+        private MaterialSimpleButton? _actionButton;
         private Label? _messageLabel;
         private System.Windows.Forms.Timer? _autoHideTimer;
         private string _message = "";
@@ -120,10 +120,10 @@ namespace MaterialWinForms.Components.Notifications
 
             if (!string.IsNullOrEmpty(_actionText))
             {
-                _actionButton = new MaterialButton
+                _actionButton = new MaterialSimpleButton
                 {
                     Text = _actionText.ToUpper(),
-                    Type = MaterialButton.ButtonType.Text,
+                    Type = MaterialSimpleButton.ButtonType.Text,
                     Location = new Point(310, 10),
                     Size = new Size(80, 40),
                     ColorScheme = new MaterialColorScheme

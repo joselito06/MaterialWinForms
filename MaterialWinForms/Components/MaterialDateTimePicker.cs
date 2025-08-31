@@ -20,7 +20,7 @@ namespace MaterialWinForms.Components
         private bool _isCalendarOpen = false;
         private bool _isHovered = false;
         private bool _isFocused = false;
-        private MaterialCard? _calendarCard;
+        private MaterialSimpleCard? _calendarCard;
         private string _dateFormat = "dd/MM/yyyy";
         private Form? _calendarForm;
 

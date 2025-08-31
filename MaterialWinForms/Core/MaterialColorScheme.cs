@@ -25,7 +25,9 @@ namespace MaterialWinForms.Core
             OnSecondary = Color.White,
             OnBackground = Color.FromArgb(33, 33, 33),
             OnSurface = Color.FromArgb(33, 33, 33),
-            OnError = Color.White
+            OnError = Color.White,
+            SecondaryContainer = Color.FromArgb(255, 235, 238),
+            OnSecondaryContainer = Color.FromArgb(156, 39, 176)
         };
 
         public static readonly MaterialColorScheme Dark = new()
@@ -41,7 +43,9 @@ namespace MaterialWinForms.Core
             OnSecondary = Color.FromArgb(0, 54, 61),
             OnBackground = Color.FromArgb(230, 225, 229),
             OnSurface = Color.FromArgb(230, 225, 229),
-            OnError = Color.FromArgb(96, 20, 16)
+            OnError = Color.FromArgb(96, 20, 16),
+            SecondaryContainer = Color.FromArgb(74, 74, 74),
+            OnSecondaryContainer = Color.FromArgb(220, 184, 255)
         };
 
         // Constructor sin parámetros para el Designer
@@ -60,6 +64,8 @@ namespace MaterialWinForms.Core
             OnBackground = Color.FromArgb(33, 33, 33);
             OnSurface = Color.FromArgb(33, 33, 33);
             OnError = Color.White;
+            SecondaryContainer = Color.FromArgb(255, 235, 238);
+            OnSecondaryContainer = Color.FromArgb(156, 39, 176);
         }
 
         public Color Primary { get; init; }
@@ -74,5 +80,7 @@ namespace MaterialWinForms.Core
         public Color OnBackground { get; init; }
         public Color OnSurface { get; init; }
         public Color OnError { get; init; }
+        public Color SecondaryContainer { get; set; }
+        public Color OnSecondaryContainer { get; set; }
     }
 }

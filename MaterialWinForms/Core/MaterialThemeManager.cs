@@ -10,7 +10,7 @@ namespace MaterialWinForms.Core
     /// <summary>
     /// Manager para administrar temas globalmente
     /// </summary>
-    public static class MaterialThremeManager
+    public static class MaterialThemeManager
     {
         public static MaterialColorScheme CurrentScheme { get; private set; } = MaterialColorScheme.Light;
 

@@ -33,5 +33,6 @@ namespace MaterialWinForms.Utils
                 (int)(color.B + (255 - color.B) * amount)
             );
         }
+
     }
 }

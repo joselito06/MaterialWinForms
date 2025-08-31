@@ -15,6 +15,8 @@ namespace MaterialWinForms.Components.Selection
     /// <summary>
     /// Switch Material Design
     /// </summary>
+    [ToolboxItem(true)]
+    [DesignTimeVisible(true)]
     public class MaterialSwitch : MaterialControl
     {
         private bool _isChecked = false;
