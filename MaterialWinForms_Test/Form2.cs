@@ -1,4 +1,5 @@
-﻿using MaterialWinForms.Templates;
+﻿using MaterialWinForms.Core;
+using MaterialWinForms.Templates;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,6 +18,7 @@ namespace MaterialWinForms_Test
         public Form2()
         {
             InitializeComponent();
+            this.Text = "Mi Aplicación con Estilos";
             FinishSetup("home");
         }
 
@@ -32,6 +34,23 @@ namespace MaterialWinForms_Test
         {
             // Configuraciones adicionales opcionales
             Scaffold.NavigationDrawer.HeaderSubtitle = "usuario@ejemplo.com";
+
+            // NUEVAS OPCIONES DE ESTILOS:
+
+            // Opción 1: Drawer que se superpone sobre el AppBar
+            Scaffold.SetDrawerStyle(NavigationDrawerStyle.Standard, DrawerHeaderStyle.Standard);
+
+            // Opción 2: AppBar flotante
+            Scaffold.SetAppBarStyle(AppBarStyle.Dense);
+
+            // Opción 3: Configurar ambos a la vez
+            //Scaffold.SetMaterialStyle(NavigationDrawerStyle.Floating, AppBarStyle.Transparent, DrawerHeaderStyle.Card);
+
+            // Opción 4: Solo cambiar el header del drawer
+            //Scaffold.NavigationDrawer.HeaderStyle = DrawerHeaderStyle.Gradient;
+
+            // Opción 5: Solo cambiar el estilo del AppBar
+            //Scaffold.AppBar.Style = AppBarStyle.Elevated;
         }
     }
 }

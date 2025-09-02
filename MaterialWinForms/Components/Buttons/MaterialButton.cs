@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MaterialWinForms.Rendering;
 
 namespace MaterialWinForms.Components.Buttons
 {
@@ -26,7 +27,7 @@ namespace MaterialWinForms.Components.Buttons
         private Point _rippleLocation;
         private int _rippleSize = 0;
         private System.Windows.Forms.Timer? _rippleTimer;
-        private CornerRadius _cornerRadius = new CornerRadius(20);
+        private CornerRadius _cornerRadius = new CornerRadius(MaterialTokens.Button.DefaultCornerRadius);
         private GradientSettings _gradient = new GradientSettings();
         private ShadowSettings _shadow = new ShadowSettings();
         private IconSettings _iconSettings = new IconSettings();
@@ -177,7 +178,7 @@ namespace MaterialWinForms.Components.Buttons
 
         private void RippleTimer_Tick(object? sender, EventArgs e)
         {
-            _rippleSize += 8;
+            _rippleSize += MaterialTokens.Button.RippleIncrement;
             if (_rippleSize > Math.Max(Width, Height) * 1.5)
             {
                 _rippleTimer?.Stop();
@@ -265,7 +266,8 @@ namespace MaterialWinForms.Components.Buttons
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 
             // Calcular áreas considerando sombra
-            var shadowPadding = CalculateShadowPadding();
+            //var shadowPadding = CalculateShadowPadding();
+            var shadowPadding = MaterialPainter.CalculateShadowPadding(_shadow);
             var buttonBounds = new Rectangle(
                 shadowPadding.Left,
                 shadowPadding.Top,
@@ -274,10 +276,12 @@ namespace MaterialWinForms.Components.Buttons
             );
 
             // Dibujar sombra
-            if (_shadow.Type != MaterialShadowType.None)
-            {
-                g.DrawMaterialShadow(buttonBounds, _cornerRadius, _shadow);
-            }
+            //if (_shadow.Type != MaterialShadowType.None)
+            //{
+            //    g.DrawMaterialShadow(buttonBounds, _cornerRadius, _shadow);
+            //}
+
+            MaterialPainter.DrawShadow(g, buttonBounds, _cornerRadius, _shadow);
 
             // Dibujar fondo del botón
             DrawButtonBackground(g, buttonBounds);

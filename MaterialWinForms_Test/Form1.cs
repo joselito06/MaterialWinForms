@@ -89,7 +89,7 @@ namespace MaterialWinForms_Test
             // Configurar navegación
             appBar.NavigationIconClick += (s, e) => scaffold.ToggleDrawer();
 
-            scaffold.AppBar = appBar;
+            //scaffold.AppBar = appBar;
         }
 
         private void SetupAdvancedNavigationDrawer()
@@ -130,7 +130,7 @@ namespace MaterialWinForms_Test
             // Eventos
             drawer.ItemSelected += OnDrawerItemSelected;
 
-            scaffold.NavigationDrawer = drawer;
+            //scaffold.NavigationDrawer = drawer;
         }
 
         private void SetupApplicationBody()
@@ -190,7 +190,7 @@ namespace MaterialWinForms_Test
             //bottomBar.AddItem("Favoritos", CreateFavoriteIcon(), false, (s, e) => ShowFavorites());
             //bottomBar.AddItem("Perfil", CreateProfileIcon(), false, (s, e) => ShowProfile());
 
-            scaffold.BottomBar = bottomBar;
+            //scaffold.BottomBar = bottomBar;
         }
 
         private void SetupNotificationSystem()
@@ -662,11 +662,11 @@ namespace MaterialWinForms_Test
         {
             if (scaffold.NavigationDrawer == null) return null;
 
-            foreach (var item in scaffold.NavigationDrawer.MenuItems)
+            /*foreach (var item in scaffold.NavigationDrawer.MenuItems)
             {
                 if (item.Text.ToLower().Contains(text.ToLower()))
                     return item;
-            }
+            }*/
             return null;
         }
 

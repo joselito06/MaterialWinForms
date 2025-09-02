@@ -1,6 +1,7 @@
 ﻿using MaterialWinForms.Components.Containers;
 using MaterialWinForms.Components.Navigation;
 using MaterialWinForms.Core;
+using MaterialWinForms.Core.CustomControls;
 using MaterialWinForms.Utils;
 using System;
 using System.Collections.Generic;
@@ -28,10 +29,10 @@ namespace MaterialWinForms.Components.Layout
         private Panel _sideSheetContainer;
 
         // Componentes Material
-        private MaterialAppBar? _appBar;
-        private MaterialNavigationDrawer? _navigationDrawer;
+        private MaterialAppBarBase? _appBar;
+        private MaterialNavigationDrawerBase? _navigationDrawer;
         private Control? _body;
-        private MaterialBottomBar? _bottomBar;
+        private MaterialBottomBarBase? _bottomBar;
         private Control? _floatingActionButton;
         private MaterialSideSheet? _sideSheet;
 
@@ -118,7 +119,7 @@ namespace MaterialWinForms.Components.Layout
         [Category("Material - Components")]
         [Description("AppBar de la aplicación")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        public MaterialAppBar? AppBar
+        public MaterialAppBarBase? AppBar
         {
             get => _appBar;
             set { SetAppBar(value); }
@@ -127,7 +128,7 @@ namespace MaterialWinForms.Components.Layout
         [Category("Material - Components")]
         [Description("NavigationDrawer de la aplicación")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        public MaterialNavigationDrawer? NavigationDrawer
+        public MaterialNavigationDrawerBase? NavigationDrawer
         {
             get => _navigationDrawer;
             set { SetNavigationDrawer(value); }
@@ -145,7 +146,7 @@ namespace MaterialWinForms.Components.Layout
         [Category("Material - Components")]
         [Description("BottomBar de la aplicación")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        public MaterialBottomBar? BottomBar
+        public MaterialBottomBarBase? BottomBar
         {
             get => _bottomBar;
             set { SetBottomBar(value); }
@@ -359,7 +360,7 @@ namespace MaterialWinForms.Components.Layout
 
         #region Métodos de configuración de componentes
 
-        private void SetAppBar(MaterialAppBar? appBar)
+        private void SetAppBar(MaterialAppBarBase? appBar)
         {
             if (_appBar != null)
             {
@@ -376,7 +377,7 @@ namespace MaterialWinForms.Components.Layout
             }
         }
 
-        private void SetNavigationDrawer(MaterialNavigationDrawer? drawer)
+        private void SetNavigationDrawer(MaterialNavigationDrawerBase? drawer)
         {
             if (_navigationDrawer != null)
             {
@@ -413,7 +414,7 @@ namespace MaterialWinForms.Components.Layout
             BodyChanged?.Invoke(this, _body);
         }
 
-        private void SetBottomBar(MaterialBottomBar? bottomBar)
+        private void SetBottomBar(MaterialBottomBarBase? bottomBar)
         {
             if (_bottomBar != null)
             {
@@ -539,8 +540,8 @@ namespace MaterialWinForms.Components.Layout
                 case ScaffoldLayoutBehavior.FloatingAppBar:
                     if (_appBar != null)
                     {
-                        _appBar.CornerRadius = new CornerRadius(12);
-                        _appBar.Shadow.Type = MaterialShadowType.Medium;
+                        //_appBar.CornerRadius = new CornerRadius(12);
+                        //_appBar.Shadow.Type = MaterialShadowType.Medium;
                     }
                     break;
                 case ScaffoldLayoutBehavior.Dense:
@@ -670,8 +671,8 @@ namespace MaterialWinForms.Components.Layout
             var drawer = new MaterialNavigationDrawer();
 
             // Asignar
-            AppBar = appBar;
-            NavigationDrawer = drawer;
+            //AppBar = appBar;
+            //NavigationDrawer = drawer;
         }
 
         public string GetDebugInfo()
@@ -694,6 +695,38 @@ namespace MaterialWinForms.Components.Layout
             return info.ToString();
         }
 
+        /// <summary>
+        /// Configurar estilo del drawer
+        /// </summary>
+        public void SetDrawerStyle(NavigationDrawerStyle style, DrawerHeaderStyle headerStyle = DrawerHeaderStyle.Standard)
+        {
+            if (NavigationDrawer != null)
+            {
+                //NavigationDrawer.Style = style;
+                //NavigationDrawer.HeaderStyle = headerStyle;
+            }
+        }
+
+        /// <summary>
+        /// Configurar estilo del AppBar
+        /// </summary>
+        public void SetAppBarStyle(AppBarStyle style)
+        {
+            if (AppBar != null)
+            {
+                //AppBar.Style = style;
+            }
+        }
+
+        /// <summary>
+        /// Configuración rápida de estilos
+        /// </summary>
+        public void SetMaterialStyle(NavigationDrawerStyle drawerStyle, AppBarStyle appBarStyle, DrawerHeaderStyle headerStyle = DrawerHeaderStyle.Standard)
+        {
+            SetDrawerStyle(drawerStyle, headerStyle);
+            SetAppBarStyle(appBarStyle);
+        }
+
         #endregion
 
         protected override void Dispose(bool disposing)
@@ -708,6 +741,123 @@ namespace MaterialWinForms.Components.Layout
             }
             base.Dispose(disposing);
         }
+
+        #region Métodos para UserControls personalizados
+
+        /// <summary>
+        /// Establecer un AppBar personalizado
+        /// </summary>
+        public void SetCustomAppBar(MaterialAppBarBase customAppBar)
+        {
+            EnableAppBar = true;
+
+            // Remover AppBar anterior si existe
+            if (_appBar != null)
+            {
+                _appBarContainer.Controls.Remove(_appBar);
+            }
+
+            _appBar = customAppBar;
+
+            if (_appBar != null)
+            {
+                _appBar.Dock = DockStyle.Fill;
+                _appBarContainer.Controls.Add(_appBar);
+                _appBarContainer.Height = _appBar.Height;
+            }
+        }
+
+        /// <summary>
+        /// Establecer un NavigationDrawer personalizado
+        /// </summary>
+        public void SetCustomDrawer(MaterialNavigationDrawerBase customDrawer)
+        {
+            EnableDrawer = true;
+
+            // Remover drawer anterior si existe
+            if (_navigationDrawer != null)
+            {
+                _drawerContainer.Controls.Remove(_navigationDrawer);
+                if (_navigationDrawer is MaterialNavigationDrawerBase drawerBase)
+                {
+                    drawerBase.ExpandedStateChanged -= OnCustomDrawerStateChanged;
+                }
+            }
+
+            _navigationDrawer = customDrawer;
+
+            if (_navigationDrawer != null)
+            {
+                _navigationDrawer.Dock = DockStyle.Fill;
+                _drawerContainer.Controls.Add(_navigationDrawer);
+
+                if (_navigationDrawer is MaterialNavigationDrawerBase drawerBase)
+                {
+                    drawerBase.ExpandedStateChanged += OnCustomDrawerStateChanged;
+                    UpdateCustomDrawerWidth(drawerBase);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Establecer un BottomBar personalizado
+        /// </summary>
+        public void SetCustomBottomBar(MaterialBottomBarBase customBottomBar)
+        {
+            EnableBottomBar = true;
+
+            if (_bottomBar != null)
+            {
+                _bottomBarContainer.Controls.Remove(_bottomBar);
+            }
+
+            _bottomBar = customBottomBar;
+
+            if (_bottomBar != null)
+            {
+                _bottomBar.Dock = DockStyle.Fill;
+                _bottomBarContainer.Controls.Add(_bottomBar);
+                _bottomBarContainer.Height = _bottomBar.Height;
+            }
+        }
+
+        /// <summary>
+        /// Establecer un FAB personalizado
+        /// </summary>
+        public void SetCustomFAB(MaterialFABBase customFAB)
+        {
+            SetFloatingActionButton(customFAB);
+        }
+
+        private void OnCustomDrawerStateChanged(object? sender, bool isExpanded)
+        {
+            if (sender is MaterialNavigationDrawerBase drawer)
+            {
+                if (isExpanded)
+                {
+                    DrawerOpened?.Invoke(this, EventArgs.Empty);
+                    _drawerTargetWidth = drawer.ExpandedWidth;
+                }
+                else
+                {
+                    DrawerClosed?.Invoke(this, EventArgs.Empty);
+                    _drawerTargetWidth = drawer.CollapsedWidth;
+                }
+
+                StartDrawerAnimation();
+            }
+        }
+
+        private void UpdateCustomDrawerWidth(MaterialNavigationDrawerBase drawer)
+        {
+            if (!_enableDrawer) return;
+
+            _drawerTargetWidth = drawer.IsExpanded ? drawer.ExpandedWidth : drawer.CollapsedWidth;
+            _drawerCurrentWidth = _drawerTargetWidth;
+            _drawerContainer.Width = _drawerCurrentWidth;
+        }
+
+        #endregion
     }
 
     // Placeholder classes

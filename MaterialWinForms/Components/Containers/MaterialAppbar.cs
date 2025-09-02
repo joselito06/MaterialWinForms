@@ -21,6 +21,9 @@ namespace MaterialWinForms.Components.Containers
     [DesignTimeVisible(true)]
     public class MaterialAppBar : MaterialControl
     {
+        private AppBarStyle _style = AppBarStyle.Standard;
+        private ShadowSettings _shadowSettings = new ShadowSettings();
+
         private string _title = "";
         private string _subtitle = "";
         private Image? _navigationIcon = null;
@@ -198,7 +201,156 @@ namespace MaterialWinForms.Components.Containers
             set { _shadow = value ?? new ShadowSettings(); Invalidate(); }
         }
 
+        [Category("Material - Style")]
+        [Description("Estilo del AppBar")]
+        [DefaultValue(AppBarStyle.Standard)]
+        public AppBarStyle Style
+        {
+            get => _style;
+            set
+            {
+                if (_style != value)
+                {
+                    _style = value;
+                    ApplyAppBarStyle();
+                    Invalidate();
+                }
+            }
+        }
+
+        [Category("Material - Appearance")]
+        [Description("Configuración de esquinas redondeadas")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public CornerRadius MaterialCornerRadius
+        {
+            get => _cornerRadius;
+            set { _cornerRadius = value ?? new CornerRadius(0); Invalidate(); }
+        }
+
+        [Category("Material - Appearance")]
+        [Description("Configuración de sombra")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public ShadowSettings ShadowSettings
+        {
+            get => _shadowSettings;
+            set { _shadowSettings = value ?? new ShadowSettings(); Invalidate(); }
+        }
+
         #endregion
+
+        private void ApplyAppBarStyle()
+        {
+            switch (_style)
+            {
+                case AppBarStyle.Standard:
+                    ApplyStandardAppBarStyle();
+                    break;
+                case AppBarStyle.Floating:
+                    ApplyFloatingAppBarStyle();
+                    break;
+                case AppBarStyle.Transparent:
+                    ApplyTransparentAppBarStyle();
+                    break;
+                case AppBarStyle.Elevated:
+                    ApplyElevatedAppBarStyle();
+                    break;
+                case AppBarStyle.Collapsing:
+                    ApplyCollapsingAppBarStyle();
+                    break;
+                case AppBarStyle.Dense:
+                    ApplyDenseAppBarStyle();
+                    break;
+            }
+        }
+
+        private void ApplyStandardAppBarStyle()
+        {
+            Dock = DockStyle.Top;
+            Height = 64;
+            _shadowSettings.Type = MaterialShadowType.Soft;
+            _shadowSettings.Blur = 4;
+            _shadowSettings.OffsetY = 2;
+            _shadowSettings.OffsetX = 0;
+            _shadowSettings.Opacity = 30;
+            _cornerRadius = new CornerRadius(0);
+            Invalidate();
+        }
+
+        private void ApplyFloatingAppBarStyle()
+        {
+            Dock = DockStyle.None;
+            Height = 64;
+            _shadowSettings.Type = MaterialShadowType.Medium;
+            _shadowSettings.Blur = 12;
+            _shadowSettings.OffsetY = 4;
+            _shadowSettings.OffsetX = 0;
+            _shadowSettings.Opacity = 40;
+            _cornerRadius = new CornerRadius(16);
+
+            // Posicionar flotante
+            if (Parent != null)
+            {
+                Location = new Point(16, 16);
+                Size = new Size(Parent.Width - 32, Height);
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            }
+            Invalidate();
+        }
+
+        private void ApplyTransparentAppBarStyle()
+        {
+            Dock = DockStyle.Top;
+            Height = 64;
+            BackColor = Color.Transparent;
+            _shadowSettings.Type = MaterialShadowType.None;
+            _cornerRadius = new CornerRadius(0);
+            Invalidate();
+        }
+
+        private void ApplyElevatedAppBarStyle()
+        {
+            Dock = DockStyle.Top;
+            Height = 64;
+            _shadowSettings.Type = MaterialShadowType.Hard;
+            _shadowSettings.Blur = 16;
+            _shadowSettings.OffsetY = 8;
+            _shadowSettings.OffsetX = 0;
+            _shadowSettings.Opacity = 60;
+            _cornerRadius = new CornerRadius(0);
+            Invalidate();
+        }
+
+        private void ApplyCollapsingAppBarStyle()
+        {
+            Dock = DockStyle.Top;
+            Height = 64; // Altura mínima
+            _shadowSettings.Type = MaterialShadowType.Soft;
+            _shadowSettings.Blur = 4;
+            _shadowSettings.OffsetY = 2;
+            _shadowSettings.OffsetX = 0;
+            _shadowSettings.Opacity = 30;
+            _cornerRadius = new CornerRadius(0);
+            Invalidate();
+        }
+
+        private void ApplyDenseAppBarStyle()
+        {
+            Dock = DockStyle.Top;
+            Height = 48;
+            _shadowSettings.Type = MaterialShadowType.Soft;
+            _shadowSettings.Blur = 2;
+            _shadowSettings.OffsetY = 1;
+            _shadowSettings.OffsetX = 0;
+            _shadowSettings.Opacity = 25;
+            _cornerRadius = new CornerRadius(0);
+            Invalidate();
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            ApplyAppBarStyle();
+        }
 
         public MaterialAppBar()
         {
@@ -540,6 +692,43 @@ namespace MaterialWinForms.Components.Containers
                 };
 
                 g.DrawString(_subtitle, font, brush, subtitleRect, sf);
+            }
+        }
+
+        private void DrawTitle(Graphics g, Rectangle bounds)
+        {
+            if (string.IsNullOrEmpty(Title)) return;
+
+            using var font = new Font("Segoe UI", 18f, FontStyle.Regular);
+            using var brush = new SolidBrush(ColorScheme.OnPrimary);
+
+            var titleFormat = new StringFormat();
+            if (CenterTitle)
+            {
+                titleFormat.Alignment = StringAlignment.Center;
+                titleFormat.LineAlignment = StringAlignment.Center;
+
+                // Área centrada (excluyendo iconos de navegación y acciones)
+                var centerArea = new Rectangle(
+                    bounds.X + (ShowNavigationIcon ? 56 : 16),
+                    bounds.Y,
+                    bounds.Width - (ShowNavigationIcon ? 56 : 16) - 120, // 120 para acciones
+                    bounds.Height
+                );
+
+                g.DrawString(Title, font, brush, centerArea, titleFormat);
+            }
+            else
+            {
+                // Título a la izquierda (comportamiento actual)
+                titleFormat.LineAlignment = StringAlignment.Center;
+                var titleArea = new Rectangle(
+                    bounds.X + (ShowNavigationIcon ? 56 : 16),
+                    bounds.Y,
+                    bounds.Width - 200,
+                    bounds.Height
+                );
+                g.DrawString(Title, font, brush, titleArea, titleFormat);
             }
         }
 

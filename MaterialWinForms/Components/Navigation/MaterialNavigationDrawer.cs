@@ -20,6 +20,13 @@ namespace MaterialWinForms.Components.Navigation
     [DesignTimeVisible(true)]
     public partial class MaterialNavigationDrawer : MaterialControl
     {
+        private NavigationDrawerStyle _style = NavigationDrawerStyle.Standard;
+        private DrawerHeaderStyle _headerStyle = DrawerHeaderStyle.Standard;
+        private Form? _overlayForm;
+        private Panel? _headerPanel;
+        private CornerRadius _cornerRadius = new CornerRadius(0);
+        private ShadowSettings _shadowSettings = new ShadowSettings();
+
         private List<DrawerItem> _menuItems = new List<DrawerItem>();
         private List<DrawerItem> _bottomItems = new List<DrawerItem>();
         private int _selectedIndex = -1;
@@ -203,7 +210,430 @@ namespace MaterialWinForms.Components.Navigation
             set { _headerGradient = value ?? new GradientSettings(); Invalidate(); }
         }
 
+        [Category("Material - Style")]
+        [Description("Estilo del Navigation Drawer")]
+        [DefaultValue(NavigationDrawerStyle.Standard)]
+        public NavigationDrawerStyle Style
+        {
+            get => _style;
+            set
+            {
+                if (_style != value)
+                {
+                    _style = value;
+                    ApplyDrawerStyle();
+                    Invalidate();
+                }
+            }
+        }
+
+        [Category("Material - Style")]
+        [Description("Estilo del header del drawer")]
+        [DefaultValue(DrawerHeaderStyle.Standard)]
+        public DrawerHeaderStyle HeaderStyle
+        {
+            get => _headerStyle;
+            set
+            {
+                if (_headerStyle != value)
+                {
+                    _headerStyle = value;
+                    UpdateHeaderStyle();
+                    Invalidate();
+                }
+            }
+        }
+
+        [Category("Material - Style")]
+        [Description("Z-Index para drawer flotante")]
+        [DefaultValue(1000)]
+        public int ZIndex { get; set; } = 1000;
+
+        [Category("Material - Appearance")]
+        [Description("Configuración de esquinas redondeadas")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public CornerRadius CornerRadius
+        {
+            get => _cornerRadius;
+            set { _cornerRadius = value ?? new CornerRadius(0); Invalidate(); }
+        }
+
+        [Category("Material - Appearance")]
+        [Description("Configuración de sombra")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public ShadowSettings ShadowSettings
+        {
+            get => _shadowSettings;
+            set { _shadowSettings = value ?? new ShadowSettings(); Invalidate(); }
+        }
+
         #endregion
+
+        private void ApplyDrawerStyle()
+        {
+            SuspendLayout();
+
+            switch (_style)
+            {
+                case NavigationDrawerStyle.Standard:
+                    ApplyStandardStyle();
+                    break;
+                case NavigationDrawerStyle.Modal:
+                    ApplyModalStyle();
+                    break;
+                case NavigationDrawerStyle.OverAppBar:
+                    ApplyOverAppBarStyle();
+                    break;
+                case NavigationDrawerStyle.Floating:
+                    ApplyFloatingStyle();
+                    break;
+                case NavigationDrawerStyle.Mini:
+                    ApplyMiniStyle();
+                    break;
+                case NavigationDrawerStyle.Push:
+                    ApplyPushStyle();
+                    break;
+            }
+            // Asegurar que el fondo se mantenga consistente
+            BackColor = ColorScheme.Surface;
+
+            ResumeLayout();
+            Invalidate();
+        }
+
+        private void ApplyStandardStyle()
+        {
+            // Estilo normal - drawer junto al contenido
+            Dock = DockStyle.Left;
+            BringToFront();
+            _shadowSettings.Type = MaterialShadowType.None;
+            _cornerRadius = new CornerRadius(0);
+            Invalidate();
+        }
+
+        private void ApplyModalStyle()
+        {
+            // Drawer modal - se superpone con overlay
+            Dock = DockStyle.None;
+            BringToFront();
+            _shadowSettings.Type = MaterialShadowType.Medium;
+            _shadowSettings.Blur = 16;
+            _shadowSettings.OffsetX = 8;
+            _shadowSettings.OffsetY = 2;
+            _shadowSettings.Opacity = 50;
+            Invalidate();
+        }
+
+        private void ApplyOverAppBarStyle()
+        {
+            // Drawer sobre el AppBar - se superpone a todo
+            Dock = DockStyle.None;
+            BringToFront();
+            _shadowSettings.Type = MaterialShadowType.Medium;
+            _shadowSettings.Blur = 12;
+            _shadowSettings.OffsetX = 4;
+            _shadowSettings.OffsetY = 0;
+            _shadowSettings.Opacity = 40;
+
+            // Configurar posición para cubrir desde arriba
+            if (Parent != null)
+            {
+                Location = new Point(0, 0);
+                Size = new Size(280, Parent.Height);
+            }
+            Invalidate();
+        }
+
+        private void ApplyFloatingStyle()
+        {
+            // Drawer flotante con esquinas redondeadas
+            Dock = DockStyle.None;
+            BringToFront();
+            _cornerRadius = new CornerRadius(0, 16, 16, 0);
+            _shadowSettings.Type = MaterialShadowType.Soft;
+            _shadowSettings.Blur = 24;
+            _shadowSettings.OffsetX = 12;
+            _shadowSettings.OffsetY = 4;
+            _shadowSettings.Opacity = 30;
+
+            // Posicionar con margen
+            if (Parent != null)
+            {
+                Location = new Point(8, 8);
+                Size = new Size(280, Parent.Height - 16);
+            }
+            Invalidate();
+        }
+
+        private void ApplyMiniStyle()
+        {
+            // Drawer mini colapsado
+            Dock = DockStyle.Left;
+            Width = 64; // Ancho mini
+            BringToFront();
+            _shadowSettings.Type = MaterialShadowType.Soft;
+            _shadowSettings.Blur = 8;
+            _shadowSettings.OffsetX = 2;
+            _shadowSettings.OffsetY = 1;
+            _shadowSettings.Opacity = 25;
+            Invalidate();
+        }
+
+        private void ApplyPushStyle()
+        {
+            // Drawer que empuja el contenido (similar a standard pero con animación)
+            Dock = DockStyle.Left;
+            BringToFront();
+            _shadowSettings.Type = MaterialShadowType.Medium;
+            _shadowSettings.Blur = 8;
+            _shadowSettings.OffsetX = 4;
+            _shadowSettings.OffsetY = 2;
+            _shadowSettings.Opacity = 35;
+            Invalidate();
+        }
+
+        private void UpdateHeaderStyle()
+        {
+            if (_headerPanel != null)
+            {
+                Controls.Remove(_headerPanel);
+                _headerPanel.Dispose();
+                _headerPanel = null;
+            }
+
+            switch (_headerStyle)
+            {
+                case DrawerHeaderStyle.Standard:
+                    CreateStandardHeader();
+                    break;
+                case DrawerHeaderStyle.Compact:
+                    CreateCompactHeader();
+                    break;
+                case DrawerHeaderStyle.Image:
+                    CreateImageHeader();
+                    break;
+                case DrawerHeaderStyle.Gradient:
+                    CreateGradientHeader();
+                    break;
+                case DrawerHeaderStyle.Card:
+                    CreateCardHeader();
+                    break;
+                case DrawerHeaderStyle.None:
+                    // Sin header
+                    break;
+            }
+        }
+
+        private void CreateStandardHeader()
+        {
+            _headerPanel = new Panel
+            {
+                Height = 160,
+                Dock = DockStyle.Top,
+                BackColor = ColorScheme.Primary
+            };
+
+            var titleLabel = new Label
+            {
+                Text = HeaderTitle,
+                Font = new Font("Segoe UI", 18f, FontStyle.Bold),
+                ForeColor = ColorScheme.OnPrimary,
+                Location = new Point(16, 100),
+                AutoSize = true
+            };
+
+            var subtitleLabel = new Label
+            {
+                Text = HeaderSubtitle,
+                Font = new Font("Segoe UI", 12f),
+                ForeColor = Color.FromArgb(200, ColorScheme.OnPrimary),
+                Location = new Point(16, 130),
+                AutoSize = true
+            };
+
+            _headerPanel.Controls.Add(titleLabel);
+            _headerPanel.Controls.Add(subtitleLabel);
+            Controls.Add(_headerPanel);
+            _headerPanel.SendToBack();
+        }
+
+        private void CreateCompactHeader()
+        {
+            _headerPanel = new Panel
+            {
+                Height = 80,
+                Dock = DockStyle.Top,
+                BackColor = ColorScheme.Surface
+            };
+
+            var titleLabel = new Label
+            {
+                Text = HeaderTitle,
+                Font = new Font("Segoe UI", 14f, FontStyle.Bold),
+                ForeColor = ColorScheme.OnSurface,
+                Location = new Point(16, 30),
+                AutoSize = true
+            };
+
+            _headerPanel.Controls.Add(titleLabel);
+            Controls.Add(_headerPanel);
+            _headerPanel.SendToBack();
+        }
+
+        private void CreateImageHeader()
+        {
+            _headerPanel = new Panel
+            {
+                Height = 200,
+                Dock = DockStyle.Top,
+                BackColor = ColorScheme.Primary
+            };
+
+            _headerPanel.Paint += (s, e) =>
+            {
+                if (HeaderImage != null)
+                {
+                    // Dibujar imagen de fondo con overlay
+                    e.Graphics.DrawImage(HeaderImage, _headerPanel.ClientRectangle);
+
+                    using var overlayBrush = new SolidBrush(Color.FromArgb(120, Color.Black));
+                    e.Graphics.FillRectangle(overlayBrush, _headerPanel.ClientRectangle);
+                }
+            };
+
+            var titleLabel = new Label
+            {
+                Text = HeaderTitle,
+                Font = new Font("Segoe UI", 20f, FontStyle.Bold),
+                ForeColor = Color.White,
+                Location = new Point(16, 140),
+                AutoSize = true,
+                BackColor = Color.Transparent
+            };
+
+            var subtitleLabel = new Label
+            {
+                Text = HeaderSubtitle,
+                Font = new Font("Segoe UI", 12f),
+                ForeColor = Color.FromArgb(220, Color.White),
+                Location = new Point(16, 170),
+                AutoSize = true,
+                BackColor = Color.Transparent
+            };
+
+            _headerPanel.Controls.Add(titleLabel);
+            _headerPanel.Controls.Add(subtitleLabel);
+            Controls.Add(_headerPanel);
+            _headerPanel.SendToBack();
+        }
+
+        private void CreateGradientHeader()
+        {
+            _headerPanel = new Panel
+            {
+                Height = 160,
+                Dock = DockStyle.Top
+            };
+
+            _headerPanel.Paint += (s, e) =>
+            {
+                var bounds = _headerPanel.ClientRectangle;
+                using var brush = new System.Drawing.Drawing2D.LinearGradientBrush(
+                    bounds,
+                    ColorScheme.Primary,
+                    ColorHelper.Darken(ColorScheme.Primary, 0.3f),
+                    45f);
+                e.Graphics.FillRectangle(brush, bounds);
+            };
+
+            var titleLabel = new Label
+            {
+                Text = HeaderTitle,
+                Font = new Font("Segoe UI", 18f, FontStyle.Bold),
+                ForeColor = ColorScheme.OnPrimary,
+                Location = new Point(16, 100),
+                AutoSize = true,
+                BackColor = Color.Transparent
+            };
+
+            var subtitleLabel = new Label
+            {
+                Text = HeaderSubtitle,
+                Font = new Font("Segoe UI", 12f),
+                ForeColor = Color.FromArgb(200, ColorScheme.OnPrimary),
+                Location = new Point(16, 130),
+                AutoSize = true,
+                BackColor = Color.Transparent
+            };
+
+            _headerPanel.Controls.Add(titleLabel);
+            _headerPanel.Controls.Add(subtitleLabel);
+            Controls.Add(_headerPanel);
+            _headerPanel.SendToBack();
+        }
+
+        private void CreateCardHeader()
+        {
+            _headerPanel = new Panel
+            {
+                Height = 140,
+                Dock = DockStyle.Top,
+                BackColor = Color.Transparent,
+                Padding = new Padding(12)
+            };
+
+            var cardPanel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = ColorScheme.Surface
+            };
+
+            cardPanel.Paint += (s, e) =>
+            {
+                var bounds = cardPanel.ClientRectangle;
+                // Dibujar sombra de tarjeta
+                using var shadowBrush = new SolidBrush(Color.FromArgb(20, Color.Black));
+                e.Graphics.FillRoundedRectangle(shadowBrush, new Rectangle(2, 2, bounds.Width, bounds.Height), 12);
+
+                // Dibujar tarjeta
+                using var cardBrush = new SolidBrush(ColorScheme.Surface);
+                e.Graphics.FillRoundedRectangle(cardBrush, bounds, 12);
+            };
+
+            var titleLabel = new Label
+            {
+                Text = HeaderTitle,
+                Font = new Font("Segoe UI", 16f, FontStyle.Bold),
+                ForeColor = ColorScheme.OnSurface,
+                Location = new Point(16, 40),
+                AutoSize = true,
+                BackColor = Color.Transparent
+            };
+
+            var subtitleLabel = new Label
+            {
+                Text = HeaderSubtitle,
+                Font = new Font("Segoe UI", 10f),
+                ForeColor = Color.FromArgb(150, ColorScheme.OnSurface),
+                Location = new Point(16, 70),
+                AutoSize = true,
+                BackColor = Color.Transparent
+            };
+
+            cardPanel.Controls.Add(titleLabel);
+            cardPanel.Controls.Add(subtitleLabel);
+            _headerPanel.Controls.Add(cardPanel);
+            Controls.Add(_headerPanel);
+            _headerPanel.SendToBack();
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            ApplyDrawerStyle();
+            UpdateHeaderStyle();
+        }
+
 
         public MaterialNavigationDrawer()
         {

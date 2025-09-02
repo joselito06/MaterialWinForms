@@ -45,22 +45,22 @@ namespace MaterialWinForms.Utils
             // Configurar AppBar
             if (scaffold.AppBar == null)
             {
-                scaffold.AppBar = new MaterialAppBar
+                /*scaffold.AppBar = new MaterialAppBar
                 {
                     Title = appTitle,
                     ShowNavigationIcon = true
-                };
+                };*/
                 scaffold.AppBar.NavigationIconClick += (s, e) => scaffold.ToggleDrawer();
             }
 
             // Configurar NavigationDrawer
             if (scaffold.NavigationDrawer == null)
             {
-                scaffold.NavigationDrawer = new MaterialNavigationDrawer
+                /*scaffold.NavigationDrawer = new MaterialNavigationDrawer
                 {
                     HeaderTitle = string.IsNullOrEmpty(headerTitle) ? appTitle : headerTitle,
                     HeaderSubtitle = headerSubtitle
-                };
+                };*/
             }
 
             return scaffold.GetNavigator();

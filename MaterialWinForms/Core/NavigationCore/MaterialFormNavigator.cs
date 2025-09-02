@@ -63,7 +63,7 @@ namespace MaterialWinForms.Core.NavigationCore
         {
             if (_scaffold.NavigationDrawer == null) return;
 
-            _scaffold.NavigationDrawer.MenuItems.Clear();
+            //_scaffold.NavigationDrawer.MenuItems.Clear();
 
             // Agrupar por categoría
             var groupedPages = _registeredPages.Values
@@ -75,19 +75,19 @@ namespace MaterialWinForms.Core.NavigationCore
                 // Agregar header de categoría
                 if (group.Key != "GENERAL")
                 {
-                    _scaffold.NavigationDrawer.AddMenuHeader(group.Key);
+                    //_scaffold.NavigationDrawer.AddMenuHeader(group.Key);
                 }
 
                 // Agregar items
                 foreach (var page in group.OrderBy(p => p.Title))
                 {
-                    _scaffold.NavigationDrawer.AddMenuItem(page.Title, null, (s, e) => NavigateTo(page.Key));
+                    //_scaffold.NavigationDrawer.AddMenuItem(page.Title, null, (s, e) => NavigateTo(page.Key));
                 }
 
                 // Divisor entre categorías (excepto para la última)
                 if (group != groupedPages.Last())
                 {
-                    _scaffold.NavigationDrawer.AddMenuDivider();
+                    //_scaffold.NavigationDrawer.AddMenuDivider();
                 }
             }
         }
